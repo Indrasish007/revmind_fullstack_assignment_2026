@@ -1,25 +1,82 @@
-# Revmind Labs AI — Fresher Full-Stack Assignment 2026
+# RevMind AI — Full-Stack Take-Home Assignment
 
-Welcome to the Revmind Labs AI take-home assignment for the Fresher Full-Stack Engineer role.
+This repository contains the full-stack application for **NovaBite Consumer Goods Sales Insights**, featuring a FastAPI backend, a React (Vite) frontend, and a SQLite database populated with sales data.
 
-Please read the full assignment brief here:
+## Project Structure
 
-👉 [ASSIGNMENT.md](./ASSIGNMENT.md)
+```
+├── backend/                  # Python FastAPI API
+│   ├── main.py               # API endpoints
+│   ├── requirements.txt      # Python dependencies
+│   ├── .env.example          # Environment variables template
+│   └── seed.py               # SQLite seeding script (to be implemented)
+├── frontend/                 # React (Vite) Frontend
+├── data/
+│   └── novabite_sales_data.csv # Raw transactional dataset
+├── .gitignore
+└── README.md
+```
 
-The dataset is available here:
+## How to Run the Project Locally
 
-👉 [`data/novabite_sales_data.csv`](./data/novabite_sales_data.csv)
+### 1. Prerequisites
+- Python 3.10+
+- Node.js 18+ (npm or yarn)
 
-## How to Start
+### 2. Backend Setup
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   # On Windows (PowerShell):
+   .\venv\Scripts\Activate.ps1
+   # On macOS/Linux:
+   source venv/bin/activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Copy the `.env.example` to `.env` and fill in your API keys:
+   ```bash
+   cp .env.example .env
+   ```
+5. Run the FastAPI development server:
+   ```bash
+   uvicorn main:app --reload
+   ```
+   The API will be available at `http://127.0.0.1:8000`. You can view the API documentation at `http://127.0.0.1:8000/docs`.
 
-Click **Use this template** to create your own repository under your GitHub account.
+### 3. Frontend Setup
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the Vite development server:
+   ```bash
+   npm run dev
+   ```
+   The frontend will be available at `http://localhost:5173`.
 
-You are expected to build the solution in your own repository and submit your completed GitHub repository link through the Google Form mentioned in the assignment brief.
+---
 
-## Important Notes
+## Technical Details (To Be Updated During Implementation)
 
-- Do not raise a pull request to this repository.
-- Do not request access to the Revmind Labs GitHub organization.
-- Commit and push your work incrementally.
-- Your final repository should be public and accessible for review.
-- Submissions must be made only through the Google Form.
+### 1. LLM Selection
+*(Explain which LLM you used and why here)*
+
+### 2. Prompt Engineering
+*(Explain how you structured the prompt in `/api/chat` here)*
+
+### 3. Areas of Improvement
+*(Describe what you would improve with more time)*
+
+### 4. Tradeoffs & Shortcuts
+*(Describe any tradeoffs or shortcuts you knowingly made)*
