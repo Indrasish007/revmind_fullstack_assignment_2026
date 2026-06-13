@@ -1,3 +1,0 @@
-This is the testing file of commit operation of GitHub.
-i have to change something to test again
-new thing
