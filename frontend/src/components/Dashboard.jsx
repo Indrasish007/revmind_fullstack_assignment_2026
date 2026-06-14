@@ -432,7 +432,7 @@ export default function Dashboard({ filter = 'all' }) {
 
       {/* 2. Compact KPI Cards Row */}
       {filter === 'all' && (
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           <KPICard
             title="Net Revenue"
             value={summary ? formatCurrency(summary.total_net_revenue) : '$0'}
