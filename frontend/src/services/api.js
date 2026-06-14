@@ -2,7 +2,9 @@
  * Centralized API Service for NovaBite Analytics Dashboard
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+import config from '../config';
+
+const API_BASE_URL = config.apiBaseUrl;
 
 /**
  * Helper to handle fetch requests and standardized error throwing
@@ -22,14 +24,18 @@ async function apiFetch(endpoint, options = {}) {
     });
 
     if (!response.ok) {
-      // Attempt to extract detail from FastAPI error response
+      // Attempt to extract detail from FastAPI error response or custom error middlewares
       let errorMessage = `Server error: ${response.status} ${response.statusText}`;
       try {
         const errData = await response.json();
-        if (errData && errData.detail) {
-          errorMessage = typeof errData.detail === 'string' 
-            ? errData.detail 
-            : JSON.stringify(errData.detail);
+        if (errData) {
+          if (errData.error && errData.error.message) {
+            errorMessage = errData.error.message;
+          } else if (errData.detail) {
+            errorMessage = typeof errData.detail === 'string' 
+              ? errData.detail 
+              : JSON.stringify(errData.detail);
+          }
         }
       } catch {
         // Fallback to text or default statusText if response is not JSON

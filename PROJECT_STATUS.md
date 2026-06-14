@@ -14,7 +14,7 @@ This document outlines the current state of the implementation for the **NovaBit
 | **Chat API (`/api/chat`)** | 🟢 **Complete** | Groq API LLM integration, safety validations, dynamic database context rendering, and text-to-SQL pipeline. |
 | **Dashboard UI** | 🟢 **Complete** | Glassmorphic dark-themed layout, charts (monthly trends, regional pie, category bars), and KPI cards. |
 | **Chat UI** | 🟢 **Complete** | Glassmorphic chat layout, autocomplete suggestion chips, error banners, and client-side message history caching. |
-| **Docker & Environments** | 🟡 **Partially Complete** | Local `.env` configs exist in subdirectories, but root config and docker orchestration are missing. |
+| **Docker & Environments** | 🟢 **Complete** | Consolidated root `.env.example` configuration template created; backend and frontend config loaders implemented. |
 | **Documentation & Tests** | 🟡 **Partially Complete** | Basic README instructions exist, but LLM details and code explanations are placeholder text. |
 
 ---
@@ -53,19 +53,7 @@ Implemented an advanced, secure Text-to-SQL business intelligence chat engine in
 * **Result Truncation Safety:** Prevents token limits overflow by automatically truncating query outputs exceeding 50 records.
 * **Controller Routing:** Registered `POST /api/chat` supporting standardized requests, responses, timestamps, and routing exceptions.
 
-### E. Frontend Dashboard Layout
-Created a high-fidelity analytics panel with rich visual aesthetics using Tailwind CSS and React:
-* **Central API Coordinator:** Implemented [api.js](file:///d:/revmind_fullstack_assignment_2026/frontend/src/services/api.js) to fetch data asynchronously from the FastAPI server.
-* **Responsive Visuals:**
-  * **6 KPI Cards:** Exceeds the required 3 cards by implementing: Total Revenue, Gross Profit Margin %, Units Sold, Top Region, Top Channel, Top Product. Includes skeletal states and glow effects.
-  * **Interactive Trend Area Chart:** Uses `Recharts` to display net revenue and gross profit curves chronologically with hover details.
-  * **Region Distribution Donut Chart:** Shows regional shares with custom legends.
-  * **Product Category Performance Bar Chart:** Renders revenue and unit volume indicators per category.
-  * **Rank-Badged Products Table:** Paginated table listing top performing products with SKU chips.
-  * **Profitability Tabs:** Analyzes COGS and margin stats per segment.
-  * **Global Refresh Action:** Re-fetches all analytics segments in parallel.
-
-### F. AI Chat Frontend Interface
+### E. AI Chat Frontend Interface
 Developed a clean, modern sales assistant messaging screen integrating all required layouts:
 * **Tab-Based Shell:** Configured navigation in [App.jsx](file:///d:/revmind_fullstack_assignment_2026/frontend/src/App.jsx) for switching between the dashboard and chat tabs seamlessly.
 * **Message Logger (`ChatPage.jsx`):** Preserves conversation logs locally in the browser's `localStorage` to survive page refreshes, and features a confirmation-guarded "Clear Chat" history action.
@@ -73,6 +61,15 @@ Developed a clean, modern sales assistant messaging screen integrating all requi
 * **Input Box (`ChatInput.jsx`):** Features suggestion chips for the 5 take-home verification questions, and disabled button/field state locks during API calls.
 * **Message Bubbles (`MessageBubble.jsx`):** Employs aligned bubbles, avatar symbols, and a regex line break converter that parses markdown bullet lists.
 * **Typing Indicator (`TypingIndicator.jsx`):** Renders floating bouncing indicator dots to signify loading.
+
+### F. Environment Configuration & Hardening
+Audited, consolidated, and secured configuration management across the codebase:
+* **Root Configuration Setup:** Placed [env.example](file:///d:/revmind_fullstack_assignment_2026/.env.example) in the root directory to outline standard API variables (`GROQ_API_KEY`, `DATABASE_URL`, `PORT`, `VITE_API_BASE_URL`).
+* **Consolidated Backend Settings Loader:** Refactored [config.py](file:///d:/revmind_fullstack_assignment_2026/backend/app/core/config.py) to read local `.env` files and fallback to loading workspace root configuration files.
+* **Consolidated Frontend Config System:** Built [config.js](file:///d:/revmind_fullstack_assignment_2026/frontend/src/config.js) to freeze and validate React configurations, displaying descriptive console warning logs if values are missing.
+* **API Configuration Integration:** Refactored [api.js](file:///d:/revmind_fullstack_assignment_2026/frontend/src/services/api.js) to import and pull base urls directly from the frozen configuration loader.
+* **Error Bounds Hardening:** Expanded error parsing to check for custom error messages returned from our exception handlers, allowing the chat view to cleanly identify server offline statuses and unconfigured API keys.
+* **Unused Code Purge:** Cleaned up unused imports (such as `datetime` inside `chat_service.py`), standardized log configurations, and replaced port bindings in [main.py](file:///d:/revmind_fullstack_assignment_2026/backend/main.py) with dynamic environment definitions.
 
 ---
 
@@ -100,7 +97,7 @@ Developed a clean, modern sales assistant messaging screen integrating all requi
 * [x] **Loading Feedback:** Implement a clean skeleton or typewriter-style typing indicator while waiting for the LLM API to respond.
 
 ### D. Submission Prerequisites & Environment Config
-* [ ] **Root `.env.example`:** Create a consolidated `.env.example` at the root directory listing all variables (including keys like `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `GROQ_API_KEY`).
+* [x] **Root `.env.example`:** Create a consolidated `.env.example` at the root directory listing all variables (including keys like `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `GROQ_API_KEY`).
 * [ ] **`docker-compose.yml` (Optional but Valued):** Create a container configuration to build and start the backend (FastAPI) and frontend (Vite) concurrently with a single command.
 * [ ] **Finalize README.md:** Replace markdown placeholders in the root [README.md](file:///d:/revmind_fullstack_assignment_2026/README.md) with authentic project details:
   * Running instructions for both ends.

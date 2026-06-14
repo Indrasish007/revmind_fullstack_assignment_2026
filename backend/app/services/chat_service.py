@@ -1,7 +1,6 @@
 import os
 import re
 import logging
-from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from openai import OpenAI
