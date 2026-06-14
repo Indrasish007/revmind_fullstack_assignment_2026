@@ -1,7 +1,8 @@
+import React from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 /**
- * Reusable KPI Card Component
+ * Compact & Information-dense Reusable KPI Card Component
  * @param {object} props
  * @param {string} props.title - Card title / label
  * @param {string|number} props.value - Primary value to display
@@ -16,7 +17,6 @@ export default function KPICard({
   title,
   value,
   icon: Icon,
-  description,
   trend,
   trendDirection = 'neutral',
   colorScheme = 'indigo',
@@ -24,105 +24,91 @@ export default function KPICard({
 }) {
   if (isLoading) {
     return (
-      <div className="glass-panel p-6 rounded-2xl border border-slate-800/80 relative overflow-hidden animate-pulse">
-        <div className="flex justify-between items-start mb-4">
-          <div className="h-4 w-28 bg-slate-800 rounded"></div>
-          <div className="h-10 w-10 bg-slate-800 rounded-xl"></div>
+      <div className="glass-card p-4.5 rounded-xl border border-slate-800/40 bg-slate-900/10 flex flex-col justify-between h-[105px] animate-pulse">
+        <div className="flex justify-between items-center">
+          <div className="h-3 w-20 bg-slate-800/80 rounded"></div>
+          <div className="h-6 w-6 bg-slate-800/85 rounded-lg"></div>
         </div>
-        <div className="h-8 w-36 bg-slate-800 rounded mb-2"></div>
-        <div className="h-3 w-48 bg-slate-800 rounded"></div>
+        <div className="h-7 w-28 bg-slate-800/80 rounded"></div>
       </div>
     );
   }
 
-  // Scheme color styling mappings
+  // Color scheme style definitions
   const schemeClasses = {
     indigo: {
-      iconBg: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-      glow: 'shadow-indigo-500/5',
-      textGradient: 'text-gradient-purple',
+      border: 'hover:border-indigo-500/30',
+      glow: 'hover:shadow-[0_0_20px_rgba(99,102,241,0.08)]',
+      icon: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20',
     },
     cyan: {
-      iconBg: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-      glow: 'shadow-cyan-500/5',
-      textGradient: 'text-gradient-cyan',
+      border: 'hover:border-cyan-500/30',
+      glow: 'hover:shadow-[0_0_20px_rgba(6,182,212,0.08)]',
+      icon: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
     },
     emerald: {
-      iconBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-      glow: 'shadow-emerald-500/5',
-      textGradient: 'text-gradient-emerald',
+      border: 'hover:border-emerald-500/30',
+      glow: 'hover:shadow-[0_0_20px_rgba(16,185,129,0.08)]',
+      icon: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
     },
     gold: {
-      iconBg: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-      glow: 'shadow-amber-500/5',
-      textGradient: 'text-gradient-gold',
+      border: 'hover:border-amber-500/30',
+      glow: 'hover:shadow-[0_0_20px_rgba(245,158,11,0.08)]',
+      icon: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
     },
     rose: {
-      iconBg: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-      glow: 'shadow-rose-500/5',
-      textGradient: 'text-rose-400',
+      border: 'hover:border-rose-500/30',
+      glow: 'hover:shadow-[0_0_20px_rgba(244,63,94,0.08)]',
+      icon: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
     },
     violet: {
-      iconBg: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
-      glow: 'shadow-violet-500/5',
-      textGradient: 'text-violet-400',
+      border: 'hover:border-violet-500/30',
+      glow: 'hover:shadow-[0_0_20px_rgba(139,92,246,0.08)]',
+      icon: 'text-violet-400 bg-violet-500/10 border-violet-500/20',
     },
   };
 
   const scheme = schemeClasses[colorScheme] || schemeClasses.indigo;
 
-  return (
-    <div className={`glass-card p-6 rounded-2xl relative overflow-hidden flex flex-col justify-between h-full shadow-lg ${scheme.glow}`}>
-      {/* Decorative gradient overlay */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-radial from-slate-800/10 via-transparent to-transparent -mr-12 -mt-12 pointer-events-none rounded-full" />
-      
-      <div>
-        <div className="flex justify-between items-start gap-4 mb-3">
-          <span className="text-sm font-semibold tracking-wide text-slate-400 uppercase">
-            {title}
-          </span>
-          {Icon && (
-            <div className={`p-2.5 rounded-xl border flex items-center justify-center shrink-0 ${scheme.iconBg}`}>
-              <Icon className="w-5 h-5" />
-            </div>
-          )}
-        </div>
+  // Trend background and text color coding
+  const trendClasses = {
+    up: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+    down: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
+    neutral: 'text-slate-400 bg-slate-800/40 border-slate-700/50'
+  };
 
-        <div className="flex flex-col gap-1">
-          <span className={`text-2xl md:text-3xl font-extrabold tracking-tight ${scheme.textGradient}`}>
-            {value}
-          </span>
-          {description && (
-            <span className="text-xs text-slate-400 font-medium truncate">
-              {description}
-            </span>
-          )}
-        </div>
+  const trendClass = trendClasses[trendDirection] || trendClasses.neutral;
+
+  return (
+    <div className={`glass-card p-4.5 rounded-xl border border-slate-800/80 bg-slate-900/15 relative overflow-hidden flex flex-col justify-between h-[105px] transition-all duration-300 shadow-md ${scheme.border} ${scheme.glow}`}>
+      
+      {/* Top row: Label & Icon */}
+      <div className="flex justify-between items-start gap-4">
+        <span className="text-[10px] md:text-[11px] font-bold tracking-wider text-slate-500 uppercase select-none truncate">
+          {title}
+        </span>
+        {Icon && (
+          <div className={`p-1.5 rounded-lg border flex items-center justify-center shrink-0 ${scheme.icon}`}>
+            <Icon className="w-3.5 h-3.5" />
+          </div>
+        )}
       </div>
 
-      {trend && (
-        <div className="mt-4 pt-3 border-t border-slate-800/60 flex items-center gap-1.5 text-xs">
-          {trendDirection === 'up' && (
-            <span className="flex items-center gap-0.5 font-semibold text-emerald-400">
-              <TrendingUp className="w-3.5 h-3.5" />
-              {trend}
-            </span>
-          )}
-          {trendDirection === 'down' && (
-            <span className="flex items-center gap-0.5 font-semibold text-rose-400">
-              <TrendingDown className="w-3.5 h-3.5" />
-              {trend}
-            </span>
-          )}
-          {trendDirection === 'neutral' && (
-            <span className="flex items-center gap-0.5 font-medium text-slate-400">
-              <Minus className="w-3.5 h-3.5" />
-              {trend}
-            </span>
-          )}
-          <span className="text-slate-500 font-normal">vs prior period</span>
-        </div>
-      )}
+      {/* Bottom row: Value & Trend Change */}
+      <div className="flex items-baseline justify-between gap-2 mt-auto">
+        <span className="text-xl md:text-2xl font-black tracking-tight text-white truncate">
+          {value}
+        </span>
+        {trend && (
+          <span className={`px-2 py-0.5 rounded-md border text-[9px] font-bold flex items-center gap-0.5 shrink-0 ${trendClass}`}>
+            {trendDirection === 'up' && <TrendingUp className="w-3 h-3" />}
+            {trendDirection === 'down' && <TrendingDown className="w-3 h-3" />}
+            {trendDirection === 'neutral' && <Minus className="w-3 h-3" />}
+            {trend}
+          </span>
+        )}
+      </div>
+
     </div>
   );
 }
