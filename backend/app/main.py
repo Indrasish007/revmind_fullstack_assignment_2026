@@ -4,6 +4,7 @@ from app.core.config import settings
 from app.middleware.error_handler import setup_error_handlers
 from app.api.health import router as health_router
 from app.api.analytics import router as analytics_router
+from app.api.chat import router as chat_router
 
 def create_app() -> FastAPI:
     app = FastAPI(
@@ -28,6 +29,7 @@ def create_app() -> FastAPI:
     # Include routers
     app.include_router(health_router)
     app.include_router(analytics_router, prefix="/api")
+    app.include_router(chat_router, prefix="/api")
     
     return app
 
