@@ -123,7 +123,7 @@ export default function ChatPage() {
       </header>
 
       {/* Main Glass Panel Wrapper for Window and Input */}
-      <div className="flex-1 glass-card p-4 md:p-6 rounded-2xl border border-slate-800/80 shadow-xl flex flex-col overflow-hidden bg-slate-900/10 backdrop-blur-md relative">
+      <div className="flex-1 min-h-0 glass-card p-4 md:p-6 rounded-2xl border border-slate-800/80 shadow-xl flex flex-col overflow-hidden bg-slate-900/10 backdrop-blur-md relative">
         {/* Decorative corner background glows */}
         <div className="absolute top-0 left-0 w-48 h-48 bg-radial from-indigo-500/5 via-transparent to-transparent -ml-16 -mt-16 pointer-events-none rounded-full" />
         <div className="absolute bottom-0 right-0 w-48 h-48 bg-radial from-cyan-500/5 via-transparent to-transparent -mr-16 -mb-16 pointer-events-none rounded-full" />

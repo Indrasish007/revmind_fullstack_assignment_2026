@@ -21,7 +21,7 @@ export default function ChatWindow({ messages, isLoading, error }) {
   const isEmpty = messages.length === 0;
 
   return (
-    <div className="flex-1 w-full overflow-y-auto px-1 pr-2 mb-4 scrollbar-thin scrollbar-thumb-indigo-500/20 scrollbar-track-transparent">
+    <div className="flex-1 min-h-0 w-full overflow-y-auto px-1 pr-2 mb-4 scrollbar-thin scrollbar-thumb-indigo-500/20 scrollbar-track-transparent">
       
       {isEmpty ? (
         /* Welcome / Empty State Screen */
