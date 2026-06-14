@@ -16,8 +16,11 @@ Welcome to the **NovaBite Consumer Goods Sales Insights** application. This repo
 9. [LLM Selection](#llm-selection)
 10. [Prompt Engineering Strategy](#prompt-engineering-strategy)
 11. [Example Questions Supported](#example-questions-supported)
-12. [Areas of Future Improvement](#areas-of-future-improvement)
-13. [Tradeoffs & Shortcuts](#tradeoffs--shortcuts)
+12. [Tradeoffs Made](#tradeoffs-made)
+13. [Known Limitations](#known-limitations)
+14. [Security Considerations](#security-considerations)
+15. [Future Improvements](#future-improvements)
+16. [Optional Bonus Features Not Yet Implemented](#optional-bonus-features-not-yet-implemented)
 
 ---
 
@@ -335,16 +338,43 @@ The Text-to-SQL chatbot dynamically translates and resolves natural language que
 
 ---
 
-## Areas of Future Improvement
+## Tradeoffs Made
 
-- **Query Cache Layer:** Integrate Redis or memory-based caching (LRU) for common BI requests to reduce redundant database queries and LLM API costs.
-- **Conversation State/Memory:** Implement user session tokens to support follow-up conversational turns (e.g. *"How did that compare to Q2?"*).
-- **Comprehensive Test Suite:** Implement unit and integration tests for route behaviors and LLM mock prompts using `pytest`.
-- **Database Migration Framework:** Integrate Alembic to manage database schema updates.
+- **File-Based SQL Database:** SQLite is used as a lightweight, single-file database. This bypasses the complexity of setting up, hosting, and maintaining a server-based relational database like PostgreSQL. While suitable for single-user local development and small datasets, it lacks concurrency management and advanced user permissions.
+- **RegEx & Keyword SQL Security Guardrails:** Safety validation is performed using raw string keyword audits (rejecting queries containing `DROP`, `INSERT`, `DELETE`, `UPDATE`) rather than parsing queries into an Abstract Syntax Tree (AST) using a library like `sqlparse`. This approach is simple and low-latency, but represents a tradeoff against potential query obfuscation workarounds.
+- **Synchronous Data Feeds:** Frontend dashboards query the aggregated endpoints synchronously on mount. No polling or WebSockets are used for real-time live data stream updates since transactional sales data changes slowly.
 
 ---
 
-## Tradeoffs & Shortcuts
+## Known Limitations
 
-- **File-Based SQL Database:** SQLite is used as a lightweight database suitable for local deployment, rather than hosting a production-grade PostgreSQL instance.
-- **Safety Validation:** Raw string keyword matches are used to validate SQL safety (e.g., rejecting queries containing `DROP`, `UPDATE`, `INSERT`) rather than a full AST SQL parsing engine (e.g., `sqlparse`), which would be more robust against complex injection attempts.
+- **Dataset Size Bounds:** Seeding logic reads the entire `novabite_sales_data.csv` into memory using Pandas, and queries existing transaction IDs in a single memory set. If the dataset scales to millions of rows, memory exhaustion would occur.
+- **No Conversation History (Stateless Chat):** Each POST to `/api/chat` is treated as a standalone request. The assistant does not retain conversational memory, meaning users cannot ask contextual follow-up questions (e.g., *"Which sales rep closed the most units in 2025?"* followed by *"What about 2024?"*).
+- **Single-Table Schema Constraint:** The Text-to-SQL logic assumes all sales metrics reside in a single flat database table (`sales`). It is not structured to handle multi-table joins or relational foreign keys.
+
+---
+
+## Security Considerations
+
+- **SQL Injection Prevention:** Enforces that all generated SQL statement queries strictly start with the `SELECT` keyword, preventing stacked queries and structural mutations.
+- **Read-Only API Enforcement:** The database session used for LLM queries is derived from a connection string that is programmatically restricted, and the code blocks mutating SQL keywords, acting as a defense-in-depth layout.
+- **API Key Exposure:** LLM client calls are performed entirely server-side. The frontend is never exposed to the `GROQ_API_KEY`, mitigating client-side extraction risks.
+
+---
+
+## Future Improvements
+
+- **Database Performance & Indexes:** Add database migration support via Alembic and fine-tune database indexes on high-cardinality query columns like `sales_rep`, `quarter`, and `sku` to optimize search performance.
+- **Query Caching Layer:** Implement Redis or an in-memory Cache (e.g., `aiocache` or `FastAPI-Cache`) to store query-result mappings, bypassing LLM translation and database hits for common sales manager questions.
+- **Robust SQL Parsing:** Replace simple string-matching validation with an AST SQL parsing engine (`sqlglot` or `sqlparse`) to strictly enforce read-only AST structures.
+- **Conversational State (Session Memory):** Integrate PostgreSQL/Redis session state backends to track and append historical user queries for contextual multi-turn conversational agents.
+
+---
+
+## Optional Bonus Features Not Yet Implemented
+
+- **Streaming LLM Responses (Typewriter Effect):** Streaming responses from Groq API to the FastAPI router (using `StreamingResponse`) and rendering them progressively in the UI using Server-Sent Events (SSE) or WebSockets.
+- **Comprehensive Unit & Integration Tests:** Integrate a testing suite using `pytest` and FastAPI's `TestClient` to mock database sessions, simulate SQL generation outputs, and test endpoint behaviors.
+- **Dockerized Deployment:** Provide a multi-stage `docker-compose.yml` to bundle and orchestrate the FastAPI backend, SQLite file volume, React static builds, and Nginx proxy configs in containerized networks.
+- **Multi-Model LLM Support:** Add fallback configurations in `config.py` to seamlessly route queries to Anthropic Claude (`claude-3-5-sonnet`) or OpenAI (`gpt-4o`) if Groq API rate limits are hit.
+- **Authentication & Authorization:** Add JWT-based login (OAuth2 password flow in FastAPI) to restrict analytics endpoints and chatbot access to authorized corporate sales managers.
