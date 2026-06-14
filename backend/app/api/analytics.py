@@ -62,6 +62,12 @@ class MonthlyTrend(BaseModel):
     gross_profit: float
 
 
+class ProductResponse(BaseModel):
+    product_name: str
+    total_net_revenue: float
+    total_units_sold: int
+
+
 # Endpoints
 
 @router.get("/summary", response_model=SummaryResponse)
@@ -350,3 +356,44 @@ def get_monthly_trend(db: Session = Depends(get_db)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error retrieving monthly trend data."
         )
+
+
+@router.get("/products", response_model=List[ProductResponse])
+def get_products(db: Session = Depends(get_db)):
+    """
+    Get distinct products with their total net revenue and total units sold,
+    sorted by revenue descending.
+    """
+    try:
+        results = db.query(
+            Sale.product_name,
+            func.sum(Sale.net_revenue_usd).label("total_net_revenue"),
+            func.sum(Sale.units_sold).label("total_units_sold")
+        ).group_by(
+            Sale.product_name
+        ).order_by(
+            desc("total_net_revenue")
+        ).all()
+
+        response = []
+        for r in results:
+            response.append({
+                "product_name": r.product_name,
+                "total_net_revenue": round(float(r.total_net_revenue), 2) if r.total_net_revenue is not None else 0.0,
+                "total_units_sold": int(r.total_units_sold) if r.total_units_sold is not None else 0
+            })
+        return response
+    except Exception as e:
+        logger.error(f"Error fetching products: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error retrieving products data."
+        )
+
+
+@router.get("/trends", response_model=List[MonthlyTrend])
+def get_trends(db: Session = Depends(get_db)):
+    """
+    Get chronological monthly sales and profit trends (alias for assignment spec).
+    """
+    return get_monthly_trend(db)
