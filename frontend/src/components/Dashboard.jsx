@@ -8,7 +8,8 @@ import {
   Sparkles, 
   RefreshCw, 
   Calendar, 
-  AlertCircle
+  AlertCircle,
+  LayoutDashboard
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -309,15 +310,15 @@ export default function Dashboard() {
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-8 flex flex-col gap-8 text-left">
       
-      {/* Top Navigation / App Branding */}
+      {/* Top Navigation / Sub-header */}
       <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-800/80">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-gradient-to-tr from-indigo-600 to-cyan-500 rounded-2xl shadow-lg shadow-indigo-900/30 flex items-center justify-center border border-indigo-400/20">
-            <Sparkles className="w-6 h-6 text-white animate-pulse" />
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 bg-indigo-500/10 border border-indigo-500/25 rounded-xl flex items-center justify-center">
+            <LayoutDashboard className="w-4 h-4 text-indigo-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-white m-0">NovaBite Insights</h1>
-            <p className="text-xs font-semibold text-slate-400 mt-0.5">Consumer Goods Performance Hub</p>
+            <h2 className="text-lg font-bold text-white leading-tight">Sales Dashboard</h2>
+            <p className="text-[10px] text-slate-400 font-semibold mt-0.5">NovaBite Consumer Goods Performance Hub</p>
           </div>
         </div>
 

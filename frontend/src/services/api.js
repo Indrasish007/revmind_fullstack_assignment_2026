@@ -127,4 +127,20 @@ export const apiService = {
   async fetchMonthlyTrend() {
     return apiFetch('/api/monthly-trend');
   },
+
+  /**
+   * Send a question to the AI sales assistant chat endpoint
+   * @param {string} question - The user's query
+   * @returns {Promise<{
+   *   question: string,
+   *   answer: string,
+   *   timestamp: string
+   * }>}
+   */
+  async sendChatMessage(question) {
+    return apiFetch('/api/chat', {
+      method: 'POST',
+      body: JSON.stringify({ question }),
+    });
+  },
 };
