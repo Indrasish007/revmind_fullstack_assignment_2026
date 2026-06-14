@@ -8,14 +8,14 @@ This document outlines the current state of the implementation for the **NovaBit
 
 | Component | Status | Description |
 | :--- | :---: | :--- |
-| **Backend Core** | 🟢 **Complete** | FastAPI server configuration, database connections, and basic middlewares. |
+| **Backend Core** | 🟢 **Complete** | FastAPI server configuration, database connections, and custom error handlers. |
 | **Database & Seeding** | 🟢 **Complete** | SQLite setup, transactional database schema mapping, and CSV parser seeder. |
 | **Dashboard API Routes** | 🟢 **Complete** | All required endpoints (`/api/products`, `/api/trends`, `/api/summary`) are fully implemented and verified. |
 | **Chat API (`/api/chat`)** | 🟢 **Complete** | Groq API LLM integration, safety validations, dynamic database context rendering, and text-to-SQL pipeline. |
 | **Dashboard UI** | 🟢 **Complete** | Glassmorphic dark-themed layout, charts (monthly trends, regional pie, category bars), and KPI cards. |
 | **Chat UI** | 🟢 **Complete** | Glassmorphic chat layout, autocomplete suggestion chips, error banners, and client-side message history caching. |
 | **Docker & Environments** | 🟢 **Complete** | Consolidated root `.env.example` configuration template created; backend and frontend config loaders implemented. |
-| **Documentation & Tests** | 🟡 **Partially Complete** | Basic README instructions exist, but LLM details and code explanations are placeholder text. |
+| **Documentation & Tests** | 🟡 **Partially Complete** | Basic README instructions exist, but final details on prompt structure, tradeoffs, and LLM choice need to be added. |
 
 ---
 
@@ -75,36 +75,18 @@ Audited, consolidated, and secured configuration management across the codebase:
 
 ## 🔴 2. Things Left to Complete (Outstanding Tasks)
 
-### A. Missing API Routes
-* [x] **`GET /api/products` Endpoint:** Build a route returning *all distinct* products with their cumulative net revenue and unit sales (to satisfy backend specification).
-* [x] **`GET /api/trends` Route:** Expose the monthly net revenue aggregation specifically under the path `/api/trends` (to match the assignment route spec exactly).
+### A. Final Submission Documentation (README.md)
+* [ ] Update the root [README.md](file:///d:/revmind_fullstack_assignment_2026/README.md) file to remove framework placeholders and include:
+  1. Detailed step-by-step local execution instructions.
+  2. Choice of LLM provider (Groq - `llama-3.3-70b-versatile`) and reasons for selection (exceptional speed, 70B parameter capability, OpenAI-compatibility, and free usage tier).
+  3. Description of prompt engineering structure (dynamic database schema context injection and baseline sales statistics context).
+  4. Areas for future improvement (streaming responses, query caching, text-to-SQL fine-tuning).
+  5. Tradeoffs or shortcuts made (such as read-only regex-based SQL safety filters).
 
-### B. LLM & Chat Backend Integration
-* [x] **`POST /api/chat` Endpoint:** Create a chat router in the backend to handle requests.
-* [x] **LLM Configuration:** Connect an LLM client (using the `openai` SDK or `anthropic`) with API keys loaded securely from config.
-* [x] **Data Context Retrieval & Prompt Design:** Design a prompt wrapper that supplies the model with relevant database schema context, statistics, or automatically runs SQL query generation against the SQLite database to answer data-driven questions.
-* [x] **Validation against Test Questions:** Verify the chatbot answers these specific prompt test cases accurately:
-  1. *"Which region had the highest net revenue in Q1 2024?"*
-  2. *"What is the gross profit margin for the Snacks category?"*
-  3. *"Which sales rep closed the most units in 2025?"*
-  4. *"Compare E-Commerce vs Modern Trade net revenue."*
-  5. *"What was the best performing product in the West region?"*
+### B. Orchestration (Docker Compose - Optional but Valued)
+* [ ] Create a `docker-compose.yml` file to run both the FastAPI backend and Vite frontend together.
+* [ ] Create `Dockerfile` configurations for `backend/` and `frontend/` to containerize both services.
 
-### C. Chat Screen UI
-* [x] **Screen/Panel Component:** Add a dedicated Chat interface screen (e.g. via navigation tab or split view alongside the dashboard).
-* [x] **User Query Form:** Implement a text input field for sales manager questions.
-* [x] **Message Stream Display:** Create message bubbles showing the user's questions and the AI's responses (supporting markdown rendering for tables or lists).
-* [x] **Loading Feedback:** Implement a clean skeleton or typewriter-style typing indicator while waiting for the LLM API to respond.
-
-### D. Submission Prerequisites & Environment Config
-* [x] **Root `.env.example`:** Create a consolidated `.env.example` at the root directory listing all variables (including keys like `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, or `GROQ_API_KEY`).
-* [ ] **`docker-compose.yml` (Optional but Valued):** Create a container configuration to build and start the backend (FastAPI) and frontend (Vite) concurrently with a single command.
-* [ ] **Finalize README.md:** Replace markdown placeholders in the root [README.md](file:///d:/revmind_fullstack_assignment_2026/README.md) with authentic project details:
-  * Running instructions for both ends.
-  * The selected LLM provider and justification.
-  * Details of the prompt structure and how SQLite data context is fed to the model.
-  * Known tradeoffs, shortcuts, and ideas for further improvement.
-
-### E. Bonus Features (Optional Additions)
-* [ ] **Streaming Chat Responses:** Deliver typewriter-style replies using Server-Sent Events (SSE).
-* [ ] **Backend Testing:** Add automated unit tests for endpoints or SQL query generators.
+### C. Bonus Features (Not Required but Stands Out)
+* [ ] **Streaming Responses:** Implement SSE (Server-Sent Events) or WebSockets in the chat API and a typewriter effect in the React UI.
+* [ ] **Automated Tests:** Add backend unit tests using `pytest` for database analytics or prompt/SQL validation routines.
