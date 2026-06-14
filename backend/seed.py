@@ -1,5 +1,6 @@
 import os
 import sys
+import logging
 import pandas as pd
 
 # Add the current directory to sys.path to allow imports from 'app'
@@ -10,33 +11,35 @@ if backend_dir not in sys.path:
 from app.core.database import Base, engine, SessionLocal
 from app.models.sales import Sale
 
+logger = logging.getLogger("uvicorn.error")
+
 def seed_database():
-    print("Starting database seeding process...")
+    logger.info("Startup seeding started")
     
     # 1. Create tables if they do not exist
     try:
         Base.metadata.create_all(bind=engine)
-        print("Database tables verified/created successfully.")
+        logger.info("Database tables verified/created successfully.")
     except Exception as e:
-        print(f"Error creating database tables: {e}", file=sys.stderr)
-        sys.exit(1)
+        logger.error(f"Error creating database tables: {e}")
+        raise e
         
     # 2. Locate and load CSV file
     # CSV is located at ../data/novabite_sales_data.csv relative to this script
     csv_path = os.path.abspath(os.path.join(backend_dir, "..", "data", "novabite_sales_data.csv"))
     
     if not os.path.exists(csv_path):
-        print(f"Error: CSV file not found at '{csv_path}'", file=sys.stderr)
-        sys.exit(1)
+        logger.error(f"Error: CSV file not found at '{csv_path}'")
+        raise FileNotFoundError(f"CSV file not found at '{csv_path}'")
         
     try:
         df = pd.read_csv(csv_path)
     except Exception as e:
-        print(f"Error reading CSV file: {e}", file=sys.stderr)
-        sys.exit(1)
+        logger.error(f"Error reading CSV file: {e}")
+        raise e
         
     total_csv_rows = len(df)
-    print(f"Loaded CSV file: {total_csv_rows} records found.")
+    logger.info(f"Loaded CSV file: {total_csv_rows} records found.")
     
     # 3. Retrieve existing transaction_id values to prevent duplicates
     session = SessionLocal()
@@ -44,9 +47,9 @@ def seed_database():
         # Fetch only the transaction_id column to minimize memory and query time
         existing_ids = set(val[0] for val in session.query(Sale.transaction_id).all())
     except Exception as e:
-        print(f"Error querying existing transaction records: {e}", file=sys.stderr)
+        logger.error(f"Error querying existing transaction records: {e}")
         session.close()
-        sys.exit(1)
+        raise e
         
     # 4. Filter out duplicates
     # Filter the DataFrame to keep only rows whose transaction_id is not in existing_ids
@@ -54,11 +57,8 @@ def seed_database():
     rows_skipped = total_csv_rows - len(new_df)
     
     if new_df.empty:
-        print("\n--- Seeding Summary ---")
-        print(f"Total rows in CSV:     {total_csv_rows}")
-        print(f"Rows imported:         0")
-        print(f"Rows skipped:          {rows_skipped} (all already imported)")
-        print("-----------------------")
+        logger.info("Database already seeded")
+        logger.info("Seeding completed")
         session.close()
         return
 
@@ -91,20 +91,24 @@ def seed_database():
         # Bulk save objects for high performance
         session.bulk_save_objects(new_sales)
         session.commit()
-        rows_imported = len(new_sales)
-        
-        print("\n--- Seeding Summary ---")
-        print(f"Total rows in CSV:     {total_csv_rows}")
-        print(f"Rows imported:         {rows_imported}")
-        print(f"Rows skipped:          {rows_skipped}")
-        print("-----------------------")
-        print("Database seeding completed successfully!")
+        rows_inserted = len(new_sales)
+        logger.info(f"Number of records inserted: {rows_inserted}")
+        logger.info("Seeding completed")
     except Exception as e:
         session.rollback()
-        print(f"Error during database transaction commit: {e}", file=sys.stderr)
-        sys.exit(1)
+        logger.error(f"Error during database transaction commit: {e}")
+        raise e
     finally:
         session.close()
 
 if __name__ == "__main__":
-    seed_database()
+    # Configure logging for standalone command-line run
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    try:
+        seed_database()
+    except Exception as e:
+        sys.exit(1)
+
