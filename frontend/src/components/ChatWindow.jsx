@@ -167,4 +167,3 @@ export default function ChatWindow({ messages, isLoading, error, onRetry, onDism
     </div>
   );
 }
-}
