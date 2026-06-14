@@ -24,12 +24,12 @@ export default function KPICard({
 }) {
   if (isLoading) {
     return (
-      <div className="glass-card p-4.5 rounded-xl border border-slate-800/40 bg-slate-900/10 flex flex-col justify-between h-[105px] animate-pulse">
+      <div className="glass-card p-4.5 rounded-xl border border-slate-800/40 bg-slate-900/10 flex flex-col justify-between min-h-[105px] h-auto animate-pulse">
         <div className="flex justify-between items-center">
           <div className="h-3 w-20 bg-slate-800/80 rounded"></div>
           <div className="h-6 w-6 bg-slate-800/85 rounded-lg"></div>
         </div>
-        <div className="h-7 w-28 bg-slate-800/80 rounded"></div>
+        <div className="h-7 w-28 bg-slate-800/80 rounded mt-2"></div>
       </div>
     );
   }
@@ -80,7 +80,7 @@ export default function KPICard({
   const trendClass = trendClasses[trendDirection] || trendClasses.neutral;
 
   return (
-    <div className={`glass-card p-4.5 rounded-xl border border-slate-800/80 bg-slate-900/15 relative overflow-hidden flex flex-col justify-between h-[105px] transition-all duration-300 shadow-md ${scheme.border} ${scheme.glow}`}>
+    <div className={`glass-card p-4.5 rounded-xl border border-slate-800/80 bg-slate-900/15 relative overflow-hidden flex flex-col justify-between min-h-[105px] h-auto transition-all duration-300 shadow-md ${scheme.border} ${scheme.glow}`}>
       
       {/* Top row: Label & Icon */}
       <div className="flex justify-between items-start gap-4">
@@ -95,8 +95,8 @@ export default function KPICard({
       </div>
 
       {/* Bottom row: Value & Trend Change */}
-      <div className="flex items-baseline justify-between gap-2 mt-auto">
-        <span className="text-xl md:text-2xl font-black tracking-tight text-white truncate">
+      <div className="flex items-baseline justify-between gap-3 mt-3">
+        <span className="text-xl md:text-2xl font-black tracking-tight text-white whitespace-normal break-words min-w-0">
           {value}
         </span>
         {trend && (
